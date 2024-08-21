@@ -27,10 +27,13 @@ class MRUCache(BaseCaching):
                         del self.cache_data[discarded]
                         print(f"DISCARD: {discarded}")
                 self.cache_data[key] = item
+            self.most_recent_key = key
+            self.cache_data.move_to_end(key)
 
     def get(self, key):
         """Gets an item by its key"""
         if key in self.cache_data:
             self.most_recent_key = key
+            self.cache_data.move_to_end(key)
             return self.cache_data[key]
         return None
