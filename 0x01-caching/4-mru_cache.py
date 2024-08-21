@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """MRUCache module"""
 
+
 from collections import OrderedDict
 from base_caching import BaseCaching
+
 
 class MRUCache(BaseCaching):
     """MRUCache defines a caching system with MRU algorithm"""

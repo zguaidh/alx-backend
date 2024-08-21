@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """LFUCache module"""
 
+
 from collections import defaultdict
 from base_caching import BaseCaching
+
 
 class LFUCache(BaseCaching):
     """LFUCache defines a caching system with LFU algorithm"""
