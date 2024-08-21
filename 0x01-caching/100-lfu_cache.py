@@ -43,10 +43,7 @@ class LFUCache(BaseCaching):
     def discard_least_frequently_used(self):
         """ Discard the least frequently used item from the cache """
         min_freq = min(self.frequency.values())
-        lfu_items = []
-        for key in self.usage_order:
-            if self.frequency[key] == min_freq:
-                lfu_items = [key]
+        lfu_items = [key for key in self.usage_order if self.frequency[key] == min_freq]
         if lfu_items:
             lru_item = lfu_items[0]
             self.usage_order.remove(lru_item)
