@@ -21,7 +21,7 @@ class LFUCache(BaseCaching):
             if key in self.cache_data:
                 self.cache_data[key] = item
                 self.frequency[key] += 1
-             else:
+            else:
                 if len(self.cache_data) >= self.MAX_ITEMS:
                     self.discard_least_frequently_used()
                 self.cache_data[key] = item
@@ -34,7 +34,7 @@ class LFUCache(BaseCaching):
         """Gets an item by its key"""
         if key in self.cache_data:
             self.frequency[key] += 1
-            if key in self.order:
+            if key in self.usage_order:
                 self.usage_order.remove(key)
             self.usage_order.append(key)
             return self.cache_data[key]
