@@ -2,14 +2,17 @@
 """Module for 5-app"""
 from flask import Flask, render_template, request, g
 from flask_babel import Babel, _
+from typing import Union
 
 app = Flask(__name__)
+
 
 class Config:
     """Sets the default language and timezone"""
     LANGUAGES = ["en", "fr"]
     BABEL_DEFAULT_LOCALE = 'en'
     BABEL_DEFAULT_TIMEZONE = 'UTC'
+
 
 app.config.from_object(Config)
 
@@ -24,7 +27,7 @@ users = {
 
 
 @babel.localeselector
-def get_locale():
+def get_locale() -> str:
     """Determines best match for supported languages"""
     # check if there is a locale parameter/query string
     if request.args.get('locale'):
@@ -35,7 +38,7 @@ def get_locale():
         return request.accept_languages.best_match(app.config['LANGUAGES'])
 
 
-def get_user():
+def get_user() -> Union[dict, None]:
     """Returns user dict if ID can be found"""
     if request.args.get('login_as'):
         user = int(request.args.get('login_as'))
@@ -52,7 +55,7 @@ def before_request():
 
 
 @app.route('/')
-def index():
+def index() -> str:
     """Renders template"""
     return render_template('5-index.html')
 
