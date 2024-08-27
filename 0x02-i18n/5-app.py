@@ -22,27 +22,34 @@ users = {
     4: {"name": "Teletubby", "locale": None, "timezone": "Europe/London"},
 }
 
-def get_user():
-    """Retrieve user by ID."""
-    user_id = request.args.get('login_as')
-    if user_id and int(user_id) in users:
-        return users[int(user_id)]
-    return None
-
-@app.before_request
-def before_request():
-    """Execute before each request."""
-    g.user = get_user()
 
 @babel.localeselector
 def get_locale():
-    """Determine the best match with our supported languages"""
-    locale = request.args.get('locale')
-    if locale and locale in app.config['LANGUAGES']:
-        return locale
-    if g.user and g.user.get('locale') in app.config['LANGUAGES']:
-        return g.user.get('locale')
-    return request.accept_languages.best_match(app.config['LANGUAGES'])
+    """Determines best match for supported languages"""
+    # check if there is a locale parameter/query string
+    if request.args.get('locale'):
+        locale = request.args.get('locale')
+        if locale in app.config['LANGUAGES']:
+            return locale
+    else:
+        return request.accept_languages.best_match(app.config['LANGUAGES'])
+
+
+def get_user():
+    """Returns user dict if ID can be found"""
+    if request.args.get('login_as'):
+        user = int(request.args.get('login_as'))
+        if user in users:
+            return users.get(user)
+    else:
+        return None
+
+
+@app.before_request
+def before_request():
+    """Finds user and sets as global on flask.g.user"""
+    g.user = get_user()
+
 
 @app.route('/')
 def index():
