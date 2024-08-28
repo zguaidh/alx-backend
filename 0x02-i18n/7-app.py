@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
-"""Module for 6-app"""
+"""Module for 7-app"""
 from flask import Flask, render_template, request, g
 from flask_babel import Babel, _
 from typing import Union
+from pytz import timezone
+import pytz.exceptions
 
 app = Flask(__name__)
 
@@ -26,32 +28,42 @@ users = {
 }
 
 
+def get_user():
+    """Returns user dict if ID can be found"""
+    try:
+        return users.get(int(request.args.get('login_as')))
+    except Exception:
+        return None
+
+
 @babel.localeselector
-def get_locale() -> str:
-    """ Determines best match for supported languages """
-    if request.args.get('locale'):
-        locale = request.args.get('locale')
-        if locale in app.config['LANGUAGES']:
-            return locale
-    elif g.user and g.user.get('locale') in app.config['LANGUAGES']:
-        return g.user.get('locale')
-    else:
-        return request.accept_languages.best_match(app.config['LANGUAGES'])
+def get_locale() -> Union[str, None]:
+    """Determines best match for supported languages"""
+    locale = request.args.get('locale')
+    if locale and locale in app.config['LANGUAGES']:
+        return locale
+
+    return request.accept_languages.best_match(app.config['LANGUAGES'])
 
 
-def get_user() -> Union[dict, None]:
-    """ Returns user dict if ID can be found """
-    if request.args.get('login_as'):
-        user = int(request.args.get('login_as'))
-        if user in users:
-            return users.get(user)
-    else:
+@babel.timezoneselector
+def get_timezone():
+    """Gets the timezone"""
+    user = get_user()
+    if user:
+        locale = user['timezone']
+    if request.args.get('timezone'):
+        locale = request.args.get('timezone')
+
+    try:
+        return timezone(locale).zone
+    except Exception:
         return None
 
 
 @app.before_request
 def before_request():
-    """ Finds user and sets as global on flask.g.user """
+    """Finds user and sets as global on flask.g.user"""
     g.user = get_user()
 
 
